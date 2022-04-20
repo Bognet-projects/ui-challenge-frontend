@@ -1,12 +1,19 @@
-import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+//Libraries
+import Vuetify from "vuetify"
+//Components
+import HomeView from "@/views/HomeView.vue"
+import {VContainer} from "vuetify/lib";
+//Utilities
+import { mount } from "@vue/test-utils"
+//Setup
+const vuetify = new Vuetify()
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      propsData: { msg }
+describe('first-spec', () => {
+    it("wrapper", () => {
+        const wrapper = mount(HomeView, {
+            vuetify
+        })
+        const container = wrapper.findComponent(VContainer)
+        expect(container.exists()).toBe(true)
     })
-    expect(wrapper.text()).toMatch(msg)
-  })
 })
