@@ -1,7 +1,7 @@
 //Libraries
 import Vuetify from "vuetify"
 //Components
-import HomeView from "@/views/HomeView.vue"
+import HomePage from "@/pages/Home.vue"
 import {VContainer} from "vuetify/lib";
 //Utilities
 import { mount } from "@vue/test-utils"
@@ -10,7 +10,7 @@ const vuetify = new Vuetify()
 
 describe('first-spec', () => {
     it("wrapper", () => {
-        const wrapper = mount(HomeView, {
+        const wrapper = mount(HomePage, {
             vuetify
         })
         const container = wrapper.findComponent(VContainer)

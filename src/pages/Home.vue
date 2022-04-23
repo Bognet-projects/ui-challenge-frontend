@@ -8,5 +8,5 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component
-export default class HomeView extends Vue {}
+export default class HomePage extends Vue {}
 </script>
