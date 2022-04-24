@@ -58,6 +58,7 @@
             small
             color="secondary"
             class="mx-2"
+            to="login"
         >Login
         </v-btn>
       </v-card-actions>
