@@ -7,43 +7,50 @@
     >
       <v-card-title>Register</v-card-title>
       <v-card-text>
-      <v-form
-          ref="form"
-          v-model="valid"
-          @submit.prevent="register"
-      >
-        <v-text-field
-            prepend-icon="fa-user"
-            v-model="formData.username"
-            label="Username"
-            required
-            :rules="[rules.required]"
-        ></v-text-field>
-        <v-text-field
-            prepend-icon="fa-envelope"
-            v-model="formData.email"
-            label="Email"
-            type="email"
-            required
-            :rules="[rules.required, rules.email]"
-        ></v-text-field>
-        <v-text-field
-            prepend-icon="fa-lock"
-            v-model="formData.password"
-            type="password"
-            label="Password"
-            required
-            :rules="[rules.required]"
-        ></v-text-field>
-        <v-btn
-            block
-            large
-            :disabled="!valid"
-            type="submit"
-            color="primary"
-            elevation="2"
-        >Register</v-btn>
-      </v-form>
+        <v-alert
+            dense
+            v-if="alert.type"
+            :type="alert.type"
+        >{{ alert.text }}
+        </v-alert>
+        <v-form
+            ref="form"
+            v-model="valid"
+            @submit.prevent="register"
+        >
+          <v-text-field
+              prepend-icon="fa-user"
+              v-model="formData.username"
+              label="Username"
+              required
+              :rules="[rules.required]"
+          ></v-text-field>
+          <v-text-field
+              prepend-icon="fa-envelope"
+              v-model="formData.email"
+              label="Email"
+              type="email"
+              required
+              :rules="[rules.required, rules.email]"
+          ></v-text-field>
+          <v-text-field
+              prepend-icon="fa-lock"
+              v-model="formData.password"
+              type="password"
+              label="Password"
+              required
+              :rules="[rules.required]"
+          ></v-text-field>
+          <v-btn
+              block
+              large
+              :disabled="!valid"
+              type="submit"
+              color="primary"
+              elevation="2"
+          >Register
+          </v-btn>
+        </v-form>
       </v-card-text>
       <v-card-actions>
         <small class="ml-auto">Already have an account?</small>
@@ -51,7 +58,8 @@
             small
             color="secondary"
             class="mx-2"
-        >Login</v-btn>
+        >Login
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -66,6 +74,10 @@ import {VForm} from "@/types/VForm";
 export default class RegisterPage extends Vue {
   @Ref("form") readonly form!: VForm;
   valid = false
+  alert = {
+    type: '',
+    text: ''
+  }
   formData: RegisterUserType = {
     username: '',
     email: '',
@@ -78,10 +90,21 @@ export default class RegisterPage extends Vue {
       return pattern.test(value) || 'Invalid e-mail!'
     }
   }
-  register(){
-    this.valid = this.form.validate()
-    if (this.valid)
-    console.log("Submitting form",this.formData)
+
+  async register() {
+    this.form.validate()
+    if (this.valid) {
+      this.$store.dispatch("registerUser", this.formData)
+          .then(() => {
+            this.alert.type = "success"
+            this.alert.text = "Successful registration!"
+          })
+          .catch((data: string) => {
+            this.alert.type = "error"
+            this.alert.text = data
+          })
+
+    }
   }
 }
 </script>
