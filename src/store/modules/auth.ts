@@ -1,4 +1,4 @@
-import {RegisterUserType, UserWithTokenType} from "@/types/userType";
+import {LoginUserType, RegisterUserType, UserWithTokenType} from "@/types/userType";
 import {Commit, Dispatch} from "vuex";
 
 type authState = {
@@ -30,9 +30,12 @@ export default {
         }
     },
     actions: {
-        loadTokenFormSession({commit, dispatch}: { commit: Commit, dispatch: Dispatch }) {
-            commit("setToken", sessionStorage.getItem("JWT"))
-            dispatch("loadUserFromToken")
+        loadTokenFormSession({commit, dispatch, state}: { commit: Commit, dispatch: Dispatch, state: authState }) {
+            const token: string | null = sessionStorage.getItem("JWT")
+            if (token && !state.user.token) {
+                commit("setToken", sessionStorage.getItem("JWT"))
+                return dispatch("loadUserFromToken")
+            }
         },
         logout({commit}: { commit: Commit }) {
             commit("setToken", null)
@@ -72,6 +75,32 @@ export default {
                         const data = await response.json()
                         if (response.status !== 201) {
                             reject(data.errors.username)
+                        }
+                        return data
+                    })
+                    .then((result: { user: UserWithTokenType }) => {
+                        if (result.user) {
+                            sessionStorage.setItem("JWT", result.user.token)
+                            commit("setUser", result.user)
+                        }
+                        resolve(result)
+                    })
+            })
+        },
+        async loginUser({commit}: { commit: Commit }, loginUser: LoginUserType) {
+            return new Promise((resolve, reject) => {
+                fetch("http://localhost:3000/api/login", {
+                    method: "POST",
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(loginUser)
+                })
+                    .then(async response => {
+                        const data = await response.json()
+                        if (response.status !== 201) {
+                            reject(data.errors.User)
                         }
                         return data
                     })

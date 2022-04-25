@@ -4,6 +4,11 @@ export interface RegisterUserType {
     password: string
 }
 
+export interface LoginUserType {
+    email: string,
+    password: string
+}
+
 export interface UserType {
     id: number,
     username: string,
