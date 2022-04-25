@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter, {Route, RouteConfig, RouteMeta} from 'vue-router'
+import VueRouter, {RouteConfig} from 'vue-router'
 import HomePage from '../pages/Home.vue'
 import RegisterPage from '../pages/Register.vue'
 import store from "@/store";
@@ -9,7 +9,8 @@ Vue.use(VueRouter)
 
 declare module 'vue-router' {
     interface RouteMeta {
-        requiresAuth: boolean
+        requiresAuth: boolean,
+        title?: string
     }
 }
 
@@ -18,19 +19,37 @@ const routes: Array<RouteConfig> = [
         path: '/',
         name: 'home',
         component: HomePage,
-        meta: {requiresAuth: true}
+        meta: {requiresAuth: true, title: "Home"}
     },
     {
         path: '/register',
         name: 'register',
         component: RegisterPage,
-        meta: {requiresAuth: false}
+        meta: {requiresAuth: false, title: "Register"},
+        beforeEnter(to, from, next){
+            if (store.getters.isAuth){
+                next({name: "home"})
+            }else{
+                next()
+            }
+        }
     },
     {
         path: '/login',
         name: 'login',
         component: LoginPage,
-        meta: {requiresAuth: false}
+        meta: {requiresAuth: false, title: "Login"},
+        beforeEnter(to, from, next){
+            if (store.getters.isAuth){
+                next({name: "home"})
+            }else{
+                next()
+            }
+        }
+    },
+    {
+        path: '/*',
+        redirect: '/'
     }
 ]
 

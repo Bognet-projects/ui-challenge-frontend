@@ -1,5 +1,6 @@
-import {LoginUserType, RegisterUserType, UserWithTokenType} from "@/types/userType";
+import {LoginUserType, RegisterUserType, UserType, UserWithTokenType} from "@/types/userType";
 import {Commit, Dispatch} from "vuex";
+import router from "@/router";
 
 type authState = {
     user: UserWithTokenType
@@ -27,6 +28,12 @@ export default {
     getters: {
         isAuth(state: authState): boolean {
             return !!state.user.token
+        },
+        getUserName(state: authState): string{
+          return state.user.username
+        },
+        getUser(state: authState): UserType{
+            return state.user
         }
     },
     actions: {
@@ -38,8 +45,16 @@ export default {
             }
         },
         logout({commit}: { commit: Commit }) {
-            commit("setToken", null)
+            commit("setUser",{
+                id: null,
+                username: null,
+                email: null,
+                image: null,
+                token: null,
+                bio: null
+            })
             sessionStorage.removeItem("JWT")
+            router.push({name: "login"})
         },
         async loadUserFromToken({commit, state, dispatch}: { commit: Commit, state: authState, dispatch: Dispatch }) {
             return new Promise((resolve) => {
