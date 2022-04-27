@@ -34,6 +34,12 @@ export default {
         },
         getUser(state: authState): UserType{
             return state.user
+        },
+        getUserId(state: authState): number{
+            return state.user.id
+        },
+        getToken(state: authState): string{
+            return state.user.token
         }
     },
     actions: {

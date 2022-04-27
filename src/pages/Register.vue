@@ -99,6 +99,7 @@ export default class RegisterPage extends Vue {
           .then(() => {
             this.alert.type = "success"
             this.alert.text = "Successful registration!"
+            this.$router.push({ name: 'home'})
           })
           .catch((data: string) => {
             this.alert.type = "error"

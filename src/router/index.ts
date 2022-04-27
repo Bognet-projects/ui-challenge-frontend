@@ -4,6 +4,7 @@ import HomePage from '../pages/Home.vue'
 import RegisterPage from '../pages/Register.vue'
 import store from "@/store";
 import LoginPage from "@/pages/Login.vue";
+import UsersPage from "@/pages/Users.vue";
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,12 @@ const routes: Array<RouteConfig> = [
                 next()
             }
         }
+    },
+    {
+        path: '/users',
+        name: 'users',
+        component: UsersPage,
+        meta: {requiresAuth: true, title: "Users List"}
     },
     {
         path: '/*',

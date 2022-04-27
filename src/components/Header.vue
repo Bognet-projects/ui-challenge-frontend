@@ -71,7 +71,7 @@ export default class HeaderComponent extends Vue {
 
   loggedInMenu = [
     {icon: "fa-user", name: "My Profile", link: ""},
-    {icon: "fa-users", name: "Users list", link: ""},
+    {icon: "fa-users", name: "Users list", link: "users"},
     {icon: "fa-newspaper", name: "Articles", link: ""}
   ]
   logoutMenu = [
