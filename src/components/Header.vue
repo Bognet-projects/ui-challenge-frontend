@@ -11,6 +11,7 @@
           rounded
           text
           class="mr-3"
+          to="profile"
           v-if="this.$store.getters.isAuth"
       >{{ this.$store.getters.getUserName }}
       </v-btn>
@@ -70,11 +71,12 @@ export default class HeaderComponent extends Vue {
   drawer = false
 
   loggedInMenu = [
-    {icon: "fa-user", name: "My Profile", link: ""},
+    {icon: "fa-user", name: "My Profile", link: "profile"},
     {icon: "fa-users", name: "Users list", link: "users"},
-    {icon: "fa-newspaper", name: "Articles", link: ""}
+    {icon: "fa-newspaper", name: "Articles", link: "home"}
   ]
   logoutMenu = [
+    {icon: "fa-newspaper", name: "Articles", link: "home"},
     {icon: "fa-right-to-bracket", name: "Login", link: "login"},
     {icon: "fa-user-plus", name: "Register", link: "register"}
   ]

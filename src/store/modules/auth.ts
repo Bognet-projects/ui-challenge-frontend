@@ -29,16 +29,16 @@ export default {
         isAuth(state: authState): boolean {
             return !!state.user.token
         },
-        getUserName(state: authState): string{
-          return state.user.username
+        getUserName(state: authState): string {
+            return state.user.username
         },
-        getUser(state: authState): UserType{
+        getUser(state: authState): UserType {
             return state.user
         },
-        getUserId(state: authState): number{
+        getUserId(state: authState): number {
             return state.user.id
         },
-        getToken(state: authState): string{
+        getToken(state: authState): string {
             return state.user.token
         }
     },
@@ -51,7 +51,7 @@ export default {
             }
         },
         logout({commit}: { commit: Commit }) {
-            commit("setUser",{
+            commit("setUser", {
                 id: null,
                 username: null,
                 email: null,
@@ -131,6 +131,33 @@ export default {
                             commit("setUser", result.user)
                         }
                         resolve(result)
+                    })
+            })
+        },
+        async updateUser({commit, state}: { commit: Commit, state: authState }, user: UserType) {
+            return new Promise((resolve, reject) => {
+                fetch("http://localhost:3000/api/user", {
+                    method: "PUT",
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'JWT ' + state.user.token
+                    },
+                    body: JSON.stringify({
+                        username: user.username,
+                        email: user.email,
+                        bio: user.bio,
+                        image: user.image
+                    })
+                })
+                    .then(async response => {
+                        const data = await response.json()
+                        if (response.status === 200) {
+                            commit("setUser",user)
+                            resolve("Update is successful.")
+                        }else{
+                            reject(data)
+                        }
                     })
             })
         }
