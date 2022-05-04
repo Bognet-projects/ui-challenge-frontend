@@ -57,6 +57,7 @@
     </v-form>
     <h3>My Articles</h3>
     <v-divider></v-divider>
+    <ArticleCard v-for="article in articles" :key="article.id" :article="article"></ArticleCard>
   </v-container>
 </template>
 
@@ -64,8 +65,11 @@
 import {Component, Ref, Vue} from "vue-property-decorator";
 import {UserInfoType} from "@/types/userType";
 import {VForm} from "@/types/VForm";
-
-@Component
+import {ArticleType} from "@/types/article";
+import ArticleCard from "@/components/ArticleCard.vue";
+@Component({
+  components: {ArticleCard}
+})
 export default class ProfilePage extends Vue {
   @Ref("form") readonly form!: VForm;
   valid = false
@@ -88,7 +92,12 @@ export default class ProfilePage extends Vue {
     }
   }
 
+  get articles(): ArticleType[]{
+    return this.$store.getters.getMyArticles(this.$store.getters.getUserId)
+  }
+
   created() {
+    this.$store.dispatch("loadArticles")
     this.user = this.$store.getters.getUser
   }
 
@@ -108,7 +117,7 @@ export default class ProfilePage extends Vue {
             this.alert.type = 'error'
             this.alert.text = error
           })
-    }else if (this.valid){
+    } else if (this.valid) {
       this.editable = !this.editable
     }
   }

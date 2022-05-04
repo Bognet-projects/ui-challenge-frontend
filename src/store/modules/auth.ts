@@ -2,7 +2,7 @@ import {LoginUserType, RegisterUserType, UserType, UserWithTokenType} from "@/ty
 import {Commit, Dispatch} from "vuex";
 import router from "@/router";
 
-type authState = {
+export type authState = {
     user: UserWithTokenType
 }
 

@@ -1,7 +1,7 @@
 import {UserType} from "@/types/userType";
 import {Commit} from "vuex";
 
-type usersState = {
+export type usersState = {
     users: UserType[]
 }
 
