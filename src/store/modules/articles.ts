@@ -1,6 +1,7 @@
 import {ArticleType} from "@/types/article";
 import {ActionTree, Commit, GetterTree, Module, MutationTree} from "vuex";
 import {ArticlesState, RootState} from "@/types/Vuex";
+import router from "@/router";
 
 export const articles: Module<ArticlesState, RootState> = {
     state: {
@@ -14,9 +15,9 @@ export const articles: Module<ArticlesState, RootState> = {
             }))
                 state.count = state.articles.push(article)
         },
-        removeArticle(state: ArticlesState, id: number) {
+        removeArticle(state: ArticlesState, slug: string) {
             state.articles = state.articles.filter((article: ArticleType): boolean => {
-                return article.id !== id
+                return article.slug !== slug
             })
             state.count = state.articles.length
         },
@@ -28,7 +29,7 @@ export const articles: Module<ArticlesState, RootState> = {
                     state.count = state.articles.push(article)
             })
         }
-    }as MutationTree<ArticlesState>,
+    } as MutationTree<ArticlesState>,
     getters: {
         getMyArticles: (state: ArticlesState) => (id: number) => {
             return state.articles.filter((article) => {
@@ -43,7 +44,7 @@ export const articles: Module<ArticlesState, RootState> = {
                 return article.id === id
             })
         }
-    }as GetterTree<ArticlesState, RootState>,
+    } as GetterTree<ArticlesState, RootState>,
     actions: {
         async loadArticles({commit}: { commit: Commit }) {
             return new Promise((resolve, reject) => {
@@ -67,6 +68,23 @@ export const articles: Module<ArticlesState, RootState> = {
                         }
                     })
             })
+        },
+        async deleteArticle({commit, rootGetters}, slug: string): Promise<string> {
+            return fetch(`http://localhost:3000/api/articles/${slug}`, {
+                method: 'DELETE',
+                credentials: 'same-origin',
+                headers: {
+                    'Authorization': 'JWT ' + rootGetters.getToken
+                }
+            })
+                .then(async response => {
+                    const data = await response.json()
+                    if (response.status === 200) {
+                        commit("removeArticle", slug)
+                        await router.push({name: "home"})
+                    }
+                    return data.message
+                })
         }
     } as ActionTree<ArticlesState, RootState>
 }

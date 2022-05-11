@@ -1,12 +1,25 @@
 <template>
   <v-container class="mt-4">
+    <v-alert
+        dense
+        dismissible
+        type="error"
+        v-if="message"
+    >{{ message }}
+    </v-alert>
     <v-row no-gutters>
       <h1>{{ article.title }}</h1>
       <v-flex align-self-center class="d-flex justify-end" v-if="loggedIn && article.author.id === userId">
         <v-btn fab small color="info" class="mx-1" depressed>
           <v-icon small>fa-pen-to-square</v-icon>
         </v-btn>
-        <v-btn fab small color="error" depressed>
+        <v-btn
+            fab
+            small
+            color="error"
+            depressed
+            @click="deleteArticle"
+        >
           <v-icon small>fa-trash-can</v-icon>
         </v-btn>
       </v-flex>
@@ -48,6 +61,9 @@ export default class ArticlePage extends Vue {
   @Getter('getUserId') userId!: number;
   @Getter('getArticleById') getArticleById!: (id: number) => ArticleType;
   @Action('loadArticles') loadArticles!: () => Promise<string | ArticleType[]>;
+  @Action('deleteArticle') deleteArticleBySlug!: (slug: string) => Promise<string>;
+
+  message: string | undefined
 
   mounted() {
     this.loadArticles()
@@ -64,6 +80,13 @@ export default class ArticlePage extends Vue {
   get article(): ArticleType {
     const id: number = parseInt(this.$route.params.id)
     return this.getArticleById(id)
+  }
+
+  deleteArticle() {
+    this.deleteArticleBySlug(this.article.slug)
+        .then(message => {
+          this.message = message
+        })
   }
 }
 </script>
