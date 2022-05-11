@@ -70,9 +70,11 @@
 import {Component, Ref, Vue} from 'vue-property-decorator'
 import {RegisterUserType} from "@/types/userType";
 import {VForm} from "@/types/VForm";
+import {Action} from "vuex-class";
 
 @Component
 export default class RegisterPage extends Vue {
+  @Action('registerUser') registerUser!: (user: RegisterUserType) => Promise<string>;
   @Ref("form") readonly form!: VForm;
   valid = false
   alert = {
@@ -95,7 +97,7 @@ export default class RegisterPage extends Vue {
   async register() {
     this.form.validate()
     if (this.valid) {
-      this.$store.dispatch("registerUser", this.formData)
+      this.registerUser(this.formData)
           .then(() => {
             this.alert.type = "success"
             this.alert.text = "Successful registration!"

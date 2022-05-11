@@ -12,15 +12,15 @@
           text
           class="mr-3"
           :to="{name: 'profile'}"
-          v-if="this.$store.getters.isAuth"
-      >{{ this.$store.getters.getUserName }}
+          v-if="this.isAuth"
+      >{{ this.username }}
       </v-btn>
       <v-btn
           fab
           small
           color="pink"
           @click="logout"
-          v-if="this.$store.getters.isAuth"
+          v-if="this.isAuth"
       >
         <v-icon color="white" small>fa-right-from-bracket</v-icon>
       </v-btn>
@@ -33,31 +33,15 @@
         color="teal"
         dark
     >
-      <v-list v-if="this.$store.getters.isAuth">
-        <v-list-item>
-          <v-list-item-avatar>
-            <v-img src="https://randomuser.me/api/portraits/lego/8.jpg"></v-img>
-          </v-list-item-avatar>
-        </v-list-item>
-        <v-list-item link>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ this.$store.getters.getUser.username }}
-            </v-list-item-title>
-            <v-list-item-subtitle>{{ this.$store.getters.getUser.email }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-      <v-divider></v-divider>
       <v-list
           nav
           dense
       >
         <v-list-item link v-for="item in this.menu" :key="item.name" :to="{name: item.link}">
           <v-list-item-icon>
-            <v-icon dense>{{item.icon}}</v-icon>
+            <v-icon dense>{{ item.icon }}</v-icon>
           </v-list-item-icon>
-          <v-list-item-title>{{item.name}}</v-list-item-title>
+          <v-list-item-title>{{ item.name }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -67,9 +51,16 @@
 
 <script lang="ts">
 import {Component, Vue} from "vue-property-decorator";
+import {Action, Getter} from "vuex-class";
+import {UserType} from "@/types/userType";
 
 @Component
 export default class HeaderComponent extends Vue {
+  @Getter('getUserName') username!: string
+  @Getter('getUser') user!: UserType;
+  @Getter('isAuth') isAuth!: boolean;
+  @Action('logout') logout!: () => void;
+
   drawer = false
 
   loggedInMenu = [
@@ -83,12 +74,8 @@ export default class HeaderComponent extends Vue {
     {icon: "fa-user-plus", name: "Register", link: "register"}
   ]
 
-  get menu(){
-    return this.$store.getters.isAuth? this.loggedInMenu : this.logoutMenu
-  }
-
-  logout() {
-    this.$store.dispatch("logout")
+  get menu() {
+    return this.isAuth ? this.loggedInMenu : this.logoutMenu
   }
 }
 </script>

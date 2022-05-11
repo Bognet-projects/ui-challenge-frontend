@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1>My Profile</h1>
-    <v-row no-gutters align="center" >
+    <v-row no-gutters align="center">
       <h3>Information</h3>
       <v-btn
           class="ml-auto mb-2"
@@ -63,22 +63,24 @@
 
 <script lang="ts">
 import {Component, Ref, Vue} from "vue-property-decorator";
-import {UserInfoType} from "@/types/userType";
+import {UserType} from "@/types/userType";
 import {VForm} from "@/types/VForm";
 import {ArticleType} from "@/types/article";
 import ArticleCard from "@/components/ArticleCard.vue";
+import {Action, Getter} from "vuex-class";
+
 @Component({
   components: {ArticleCard}
 })
 export default class ProfilePage extends Vue {
+  @Getter('getUserId') userId!: number;
+  @Getter('getUser') user!: UserType;
+  @Getter('getMyArticles') getMyArticles!: (id: number) => ArticleType[];
+  @Action('loadArticles') loadArticles!: () => Promise<string>;
+  @Action('updateUser') updateUser!: (user: UserType)=> Promise<string>;
   @Ref("form") readonly form!: VForm;
+
   valid = false
-  user: UserInfoType = {
-    username: '',
-    email: '',
-    image: '',
-    bio: ''
-  }
   editable = false
   alert: { type: string, text: string } = {
     type: '',
@@ -92,19 +94,18 @@ export default class ProfilePage extends Vue {
     }
   }
 
-  get articles(): ArticleType[]{
-    return this.$store.getters.getMyArticles(this.$store.getters.getUserId)
+  mounted() {
+    this.loadArticles()
   }
 
-  created() {
-    this.$store.dispatch("loadArticles")
-    this.user = this.$store.getters.getUser
+  get articles(): ArticleType[] {
+    return this.getMyArticles(this.userId)
   }
 
   async edit() {
     this.form.validate()
     if (this.editable && this.valid) {
-      this.$store.dispatch("updateUser", this.user)
+      this.updateUser(this.user)
           .then((message) => {
             this.alert.type = 'success'
             this.alert.text = message

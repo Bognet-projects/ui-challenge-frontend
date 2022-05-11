@@ -17,9 +17,6 @@ export const users: Module<UsersState, RootState> = {
         }
     } as MutationTree<UsersState>,
     getters: {
-        usersLoaded(state: UsersState): boolean {
-            return state.users.length > 0
-        },
         getAllUser(state: UsersState): UserType[] {
             return state.users
         },

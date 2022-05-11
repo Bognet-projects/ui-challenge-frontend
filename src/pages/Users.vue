@@ -1,22 +1,7 @@
 <template>
   <v-container>
-    <v-row
-        no-gutters
-        align="center"
-    >
-      <h1>Users List</h1>
-      <v-btn
-          class="ml-auto"
-          small
-          dark
-          color="blue"
-          elevation="2"
-          @click="updateUsers"
-      >
-        Update
-        <v-icon x-small class="ml-2">fa-arrows-rotate</v-icon>
-      </v-btn>
-    </v-row>
+    <h1>Users List</h1>
+
     <v-alert
         dense
         dismissible
@@ -56,42 +41,36 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator'
 import {UserType} from "@/types/userType";
+import {Action, Getter} from "vuex-class";
 
 @Component
 export default class UsersPage extends Vue {
-  users: UserType[] = []
+  @Getter('getAllUsersExceptMe') users!: UserType[]
+  @Action('loadUsers') loadUsers!: () => Promise<string>
+  @Action('deleteUser') deleteOneUser!: (email: string) => Promise<string>;
+
   alert: { type: string, text: string } = {
     type: '',
     text: ''
   }
 
-  created() {
-    if (!this.$store.getters.usersLoaded) {
-      this.$store.dispatch("loadUsers").then(() => {
-        this.users = this.$store.getters.getAllUsersExceptMe
-      })
-    } else {
-      this.users = this.$store.getters.getAllUsersExceptMe
-    }
+  mounted() {
+    this.loadUsers()
   }
 
-  updateUsers(){
-    this.$store.dispatch("loadUsers").then(() => {
-      this.users = this.$store.getters.getAllUsersExceptMe
-    })
-  }
   deleteUser(email: string): void {
-    this.$store.dispatch("deleteUser", email).then((text: string) => {
-      this.alert.type = 'success'
-      this.alert.text = text
-      this.users = this.$store.getters.getAllUsersExceptMe
-      window.setInterval(() => {
-        this.alert.type = ''
-      }, 3000)
-    }).catch((text: string) => {
-      this.alert.type = 'alert'
-      this.alert.text = text
-    })
+    this.deleteOneUser(email)
+        .then(text => {
+          this.alert.type = 'success'
+          this.alert.text = text
+          window.setInterval(() => {
+            this.alert.type = ''
+          }, 3000)
+        })
+        .catch((text: string) => {
+          this.alert.type = 'alert'
+          this.alert.text = text
+        })
   }
 }
 </script>

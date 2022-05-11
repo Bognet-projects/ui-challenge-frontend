@@ -9,7 +9,6 @@ export default {
     success: '#4CAF50',
     warning: '#FFC107',
     anchor: '#111111',
-    boxShadow: 'rgba(0,0,0,.08)',
     background: '#ffe1bc',
 
 } as Partial<VuetifyThemeVariant>

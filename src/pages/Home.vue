@@ -9,7 +9,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import {ArticleType} from "@/types/article";
 import ArticleCard from "@/components/ArticleCard.vue";
-import {State} from "vuex-class";
+import {Action, State} from "vuex-class";
 
 @Component({
       components: {ArticleCard}
@@ -17,11 +17,12 @@ import {State} from "vuex-class";
 )
 export default class HomePage extends Vue {
   @State(state => state.articles.articles) articles: ArticleType[] | undefined
+  @Action('loadArticles') loadArticles!: () => Promise<ArticleType[] | string>
 
   message = ""
 
-  created() {
-    this.$store.dispatch("loadArticles")
+  mounted() {
+    this.loadArticles()
         .then((result: string | ArticleType[]) => {
           if (typeof result === "string") {
             this.message = result

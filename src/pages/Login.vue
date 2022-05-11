@@ -63,9 +63,11 @@
 import {Component, Ref, Vue} from 'vue-property-decorator'
 import {VForm} from "@/types/VForm";
 import {LoginUserType} from "@/types/userType";
+import {Action} from "vuex-class";
 
 @Component
 export default class LoginPage extends Vue {
+  @Action('loginUser') loginUser!: (loginUser: LoginUserType) => Promise<string>;
   @Ref("form") readonly form!: VForm;
   valid = false
   alert = {
@@ -83,18 +85,19 @@ export default class LoginPage extends Vue {
       return pattern.test(value) || 'Invalid e-mail!'
     }
   }
+
   async login() {
     this.form.validate()
     if (this.valid) {
-      this.$store.dispatch("loginUser", this.formData)
+      this.loginUser(this.formData)
           .then(() => {
             this.alert.type = "success"
             this.alert.text = "Successful login!"
-            this.$router.push({ name: 'home'})
+            this.$router.push({name: 'home'})
           })
           .catch((data: string) => {
             this.alert.type = "error"
-            this.alert.text = "User "+data
+            this.alert.text = "User " + data
           })
 
     }
