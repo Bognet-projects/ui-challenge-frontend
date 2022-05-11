@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="my-4">
     <h1>My Profile</h1>
     <v-row no-gutters align="center">
       <h3>Information</h3>
@@ -28,15 +28,19 @@
         <v-row>
           <v-col cols="12" sm="6">
             <v-text-field
+                color="teal"
                 label="Username"
                 v-model="user.username"
                 :readonly="!editable"
                 dense filled
+                rounded
                 :rules="[rules.required]"
             ></v-text-field>
           </v-col>
           <v-col cols="12" sm="6">
             <v-text-field
+                rounded
+                color="teal"
                 label="Email"
                 v-model="user.email"
                 :readonly="!editable"
@@ -46,7 +50,10 @@
           </v-col>
           <v-col cols="12">
             <v-textarea
+                color="teal"
                 label="Bio"
+                auto-grow
+                rounded
                 v-model="user.bio"
                 :readonly="!editable"
                 dense filled
@@ -124,3 +131,12 @@ export default class ProfilePage extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.v-main__wrap > .container{
+  padding: 10px 20px;
+  border-radius: 1rem;
+  min-height: 95%;
+  background-color: rgba(white, .54);
+}
+</style>

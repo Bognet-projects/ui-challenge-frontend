@@ -3,17 +3,21 @@
     <v-alert
         dense
         dismissible
-        type="error"
+        :type="messageType"
         v-if="message"
     >{{ message }}
     </v-alert>
     <v-row no-gutters>
       <h1>{{ article.title }}</h1>
       <v-flex align-self-center class="d-flex justify-end" v-if="loggedIn && article.author.id === userId">
-        <v-btn fab small color="info" class="mx-1" depressed>
+        <v-btn fab small color="info" class="mx-1" depressed @click="edit = !edit" v-if="!edit">
           <v-icon small>fa-pen-to-square</v-icon>
         </v-btn>
+        <v-btn fab small color="info" class="mx-1" depressed @click="updateArticle" v-if="edit">
+          <v-icon small>fa-floppy-disk</v-icon>
+        </v-btn>
         <v-btn
+            v-if="!edit"
             fab
             small
             color="error"
@@ -41,12 +45,8 @@
       </v-col>
     </v-row>
     <v-divider></v-divider>
-    <v-container>
-      {{ article.body }}
-    </v-container>
-    <v-row no-gutters>
-      <v-chip v-for="tag in article.tagList" :key="tag" color="pink" dark>{{ tag }}</v-chip>
-    </v-row>
+    <ArticleShow :article="article" v-if="!edit"></ArticleShow>
+    <ArticleEdit :article="article" v-if="edit"></ArticleEdit>
   </v-container>
 </template>
 
@@ -54,16 +54,23 @@
 import {Component, Vue} from "vue-property-decorator";
 import {ArticleType} from "@/types/article";
 import {Getter, Action} from "vuex-class"
+import ArticleShow from "@/components/ArticleShow.vue";
+import ArticleEdit from "@/components/ArticleEdit.vue";
 
-@Component
+@Component({
+  components: {ArticleEdit, ArticleShow}
+})
 export default class ArticlePage extends Vue {
   @Getter('isAuth') loggedIn!: boolean;
   @Getter('getUserId') userId!: number;
   @Getter('getArticleById') getArticleById!: (id: number) => ArticleType;
   @Action('loadArticles') loadArticles!: () => Promise<string | ArticleType[]>;
   @Action('deleteArticle') deleteArticleBySlug!: (slug: string) => Promise<string>;
+  @Action('updateArticle') updateArticleAfterEdit!: (article: ArticleType) => Promise<string>;
 
-  message: string | undefined
+  message = ""
+  messageType = "error"
+  edit = false
 
   mounted() {
     this.loadArticles()
@@ -87,6 +94,19 @@ export default class ArticlePage extends Vue {
         .then(message => {
           this.message = message
         })
+  }
+
+  updateArticle() {
+    this.updateArticleAfterEdit(this.article).then(response=>{
+      if (response){
+        this.message = response
+        this.messageType = "error"
+      } else {
+        this.message = "The article has been successfully updated."
+        this.messageType = "success"
+      }
+      this.edit = !this.edit
+    })
   }
 }
 </script>

@@ -19,6 +19,7 @@
             @submit.prevent="login"
         >
           <v-text-field
+              color="teal"
               prepend-icon="fa-envelope"
               v-model="formData.email"
               label="Email"
@@ -27,6 +28,7 @@
               :rules="[rules.required, rules.email]"
           ></v-text-field>
           <v-text-field
+              color="teal"
               prepend-icon="fa-lock"
               v-model="formData.password"
               type="password"
@@ -39,7 +41,7 @@
               large
               :disabled="!valid"
               type="submit"
-              color="primary"
+              color="teal"
               elevation="2"
           >Login
           </v-btn>

@@ -1,4 +1,4 @@
-import {ArticleType} from "@/types/article";
+import {ArticleType, CreateArticleType} from "@/types/article";
 import {ActionTree, Commit, GetterTree, Module, MutationTree} from "vuex";
 import {ArticlesState, RootState} from "@/types/Vuex";
 import router from "@/router";
@@ -27,6 +27,14 @@ export const articles: Module<ArticlesState, RootState> = {
                     return data.id === article.id
                 }))
                     state.count = state.articles.push(article)
+            })
+        },
+        updateArticle(state: ArticlesState, article: ArticleType) {
+            state.articles.find((data) => {
+                if (data.id === article.id) {
+                    data = article
+                }
+                return false
             })
         }
     } as MutationTree<ArticlesState>,
@@ -82,6 +90,52 @@ export const articles: Module<ArticlesState, RootState> = {
                     if (response.status === 200) {
                         commit("removeArticle", slug)
                         await router.push({name: "home"})
+                    }
+                    return data.message
+                })
+        },
+        async updateArticle({commit, rootGetters}, article: ArticleType): Promise<string> {
+            return fetch(`http://localhost:3000/api/articles/${article.slug}`, {
+                method: 'PUT',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'JWT ' + rootGetters.getToken
+                },
+                body: JSON.stringify({
+                    title: article.title,
+                    description: article.description,
+                    body: article.body,
+                    tagList: article.tagList
+                })
+            })
+                .then(async response => {
+                    const data = await response.json()
+                    if (response.status === 200) {
+                        commit("updateArticle", article)
+                    }
+                    return data.message
+                })
+        },
+        async createArticle({commit, rootGetters}, article: CreateArticleType): Promise<string> {
+            return fetch("http://localhost:3000/api/articles/", {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'Content-type': 'application/json',
+                    'Authorization': 'JWT ' + rootGetters.getToken
+                },
+                body: JSON.stringify({
+                    title: article.title,
+                    description: article.description,
+                    body: article.body,
+                    tagList: article.tagList
+                })
+            })
+                .then(async response => {
+                    const data = await response.json()
+                    if (response.status === 200) {
+                        commit("addArticle", article)
                     }
                     return data.message
                 })

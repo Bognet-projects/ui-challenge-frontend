@@ -7,6 +7,7 @@ import LoginPage from "@/pages/Login.vue";
 import UsersPage from "@/pages/Users.vue";
 import ProfilePage from "@/pages/Profile.vue";
 import ArticlePage from "@/pages/Article.vue";
+import CreateArticle from "@/pages/Create.vue";
 
 Vue.use(VueRouter)
 
@@ -61,6 +62,12 @@ const routes: Array<RouteConfig> = [
         name: 'profile',
         component: ProfilePage,
         meta: {requiresAuth: true, title: "My Profile"}
+    },
+    {
+        path: '/articles/create',
+        name: 'create',
+        component: CreateArticle,
+        meta: {requiresAuth: true}
     },
     {
         path: '/article/:id',

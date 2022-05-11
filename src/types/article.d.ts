@@ -12,3 +12,10 @@ export interface ArticleType{
     favoriteCount: number,
     author: UserType
 }
+
+export interface CreateArticleType {
+    title: string,
+    description: string,
+    body: string,
+    tagList: string[]
+}

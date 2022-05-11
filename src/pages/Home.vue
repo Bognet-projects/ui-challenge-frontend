@@ -1,5 +1,13 @@
 <template>
   <v-container>
+    <v-row no-gutters>
+      <v-btn class="ml-auto" color="info" @click="$router.push({name: 'create'})">
+        <v-icon left>
+          fa-plus
+        </v-icon>
+        New
+      </v-btn>
+    </v-row>
     <p v-if="articles.length === 0">{{ message }}</p>
     <ArticleCard v-for="article in articles" :key="article.id" :article="article"></ArticleCard>
   </v-container>
