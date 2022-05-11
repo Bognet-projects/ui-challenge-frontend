@@ -1,21 +1,34 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
-import auth, {authState} from "@/store/modules/auth";
-import users, {usersState} from "@/store/modules/users";
-import articles, {articlesState} from "@/store/modules/articles";
+import Vuex, {StoreOptions} from 'vuex'
+import {auth} from "@/store/modules/auth";
+import {users} from "@/store/modules/users";
+import {articles} from "@/store/modules/articles";
+import {RootState} from "@/types/Vuex";
 
 Vue.use(Vuex)
 
-export type storeState = {
-  auth: authState,
-  users: usersState,
-  articles: articlesState
+const store: StoreOptions<RootState> = {
+    state: {
+        token: undefined
+    },
+    mutations: {
+        setToken(state: RootState, token: string) {
+            state.token = token
+        }
+    },
+    getters: {
+        getToken(state: RootState): string | undefined {
+            return state.token
+        },
+        isAuth(state: RootState): boolean {
+            return !!state.token
+        }
+    },
+    modules: {
+        auth,
+        users,
+        articles
+    }
 }
 
-export default new Vuex.Store<storeState>({
-  modules: {
-    auth,
-    users,
-    articles
-  }
-})
+export default new Vuex.Store<RootState>(store)

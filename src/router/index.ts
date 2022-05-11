@@ -6,6 +6,7 @@ import store from "@/store";
 import LoginPage from "@/pages/Login.vue";
 import UsersPage from "@/pages/Users.vue";
 import ProfilePage from "@/pages/Profile.vue";
+import ArticlePage from "@/pages/Article.vue";
 
 Vue.use(VueRouter)
 
@@ -18,7 +19,7 @@ declare module 'vue-router' {
 
 const routes: Array<RouteConfig> = [
     {
-        path: '/',
+        path: '/articles',
         name: 'home',
         component: HomePage,
         meta: {requiresAuth: false, title: "Home"}
@@ -62,8 +63,14 @@ const routes: Array<RouteConfig> = [
         meta: {requiresAuth: true, title: "My Profile"}
     },
     {
+        path: '/article/:id',
+        name: 'article',
+        component: ArticlePage,
+        meta: {requiresAuth: false}
+    },
+    {
         path: '/*',
-        redirect: '/'
+        redirect: '/articles'
     }
 ]
 

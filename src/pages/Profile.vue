@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <h1>My Profile</h1>
-    <v-row no-gutters align="center">
+    <v-row no-gutters align="center" >
       <h3>Information</h3>
       <v-btn
           class="ml-auto mb-2"

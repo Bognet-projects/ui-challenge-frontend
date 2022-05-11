@@ -1,30 +1,26 @@
 import {ArticleType} from "@/types/article";
-import {Commit} from "vuex";
+import {ActionTree, Commit, GetterTree, Module, MutationTree} from "vuex";
+import {ArticlesState, RootState} from "@/types/Vuex";
 
-export type articlesState = {
-    articles: ArticleType[],
-    count: number
-}
-
-export default {
+export const articles: Module<ArticlesState, RootState> = {
     state: {
         articles: [],
         count: 0
-    } as articlesState,
+    } as ArticlesState,
     mutations: {
-        addArticle(state: articlesState, article: ArticleType) {
+        addArticle(state: ArticlesState, article: ArticleType) {
             if (!state.articles.some((data) => {
                 return data.id === article.id
             }))
                 state.count = state.articles.push(article)
         },
-        removeArticle(state: articlesState, id: number) {
+        removeArticle(state: ArticlesState, id: number) {
             state.articles = state.articles.filter((article: ArticleType): boolean => {
                 return article.id !== id
             })
             state.count = state.articles.length
         },
-        addArticles(state: articlesState, articles: ArticleType[]) {
+        addArticles(state: ArticlesState, articles: ArticleType[]) {
             articles.forEach((article) => {
                 if (!state.articles.some((data) => {
                     return data.id === article.id
@@ -32,17 +28,22 @@ export default {
                     state.count = state.articles.push(article)
             })
         }
-    },
+    }as MutationTree<ArticlesState>,
     getters: {
-        getMyArticles: (state: articlesState) => (id: number) => {
-            return state.articles.filter((article)=>{
+        getMyArticles: (state: ArticlesState) => (id: number) => {
+            return state.articles.filter((article) => {
                 return article.author.id === id
             })
         },
-        articlesCount(state: articlesState): number {
+        articlesCount(state: ArticlesState): number {
             return state.count
+        },
+        getArticleById: (state: ArticlesState) => (id: number): ArticleType | undefined => {
+            return state.articles.find((article) => {
+                return article.id === id
+            })
         }
-    },
+    }as GetterTree<ArticlesState, RootState>,
     actions: {
         async loadArticles({commit}: { commit: Commit }) {
             return new Promise((resolve, reject) => {
@@ -67,5 +68,5 @@ export default {
                     })
             })
         }
-    }
+    } as ActionTree<ArticlesState, RootState>
 }

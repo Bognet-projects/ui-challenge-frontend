@@ -1,74 +1,53 @@
 import {LoginUserType, RegisterUserType, UserType, UserWithTokenType} from "@/types/userType";
-import {Commit, Dispatch} from "vuex";
+import {ActionTree, Commit, Dispatch, GetterTree, Module, MutationTree} from "vuex";
 import router from "@/router";
+import {AuthState, RootState} from "@/types/Vuex";
 
-export type authState = {
-    user: UserWithTokenType
-}
-
-export default {
+export const auth: Module<AuthState, RootState> = {
     state: {
-        user: {
-            id: null,
-            username: null,
-            email: null,
-            image: null,
-            token: null,
-            bio: null
-        }
-    },
-    mutations: {
-        setToken(state: authState, token: string) {
-            state.user.token = token
-        },
-        setUser(state: authState, user: UserWithTokenType) {
-            state.user = user;
-        }
-    },
+        user: undefined
+    } as AuthState,
     getters: {
-        isAuth(state: authState): boolean {
-            return !!state.user.token
+        getUserName(state: AuthState): string {
+            return state.user ? state.user.username : ""
         },
-        getUserName(state: authState): string {
-            return state.user.username
-        },
-        getUser(state: authState): UserType {
+        getUser(state: AuthState): UserType | undefined {
             return state.user
         },
-        getUserId(state: authState): number {
-            return state.user.id
-        },
-        getToken(state: authState): string {
-            return state.user.token
+        getUserId(state: AuthState): number | null {
+            return state.user ? state.user.id : null
         }
-    },
+    } as GetterTree<AuthState, RootState>,
+    mutations: {
+        setUser(state: AuthState, user: UserWithTokenType) {
+            state.user = user;
+        }
+    } as MutationTree<AuthState>,
     actions: {
-        loadTokenFormSession({commit, dispatch, state}: { commit: Commit, dispatch: Dispatch, state: authState }) {
+        loadTokenFormSession({commit, dispatch, state}: { commit: Commit, dispatch: Dispatch, state: AuthState }) {
             const token: string | null = sessionStorage.getItem("JWT")
-            if (token && !state.user.token) {
+            if (token && !state.user) {
                 commit("setToken", sessionStorage.getItem("JWT"))
                 return dispatch("loadUserFromToken")
             }
         },
         logout({commit}: { commit: Commit }) {
-            commit("setUser", {
-                id: null,
-                username: null,
-                email: null,
-                image: null,
-                token: null,
-                bio: null
-            })
+            commit("setUser", undefined)
+            commit("setToken", undefined)
             sessionStorage.removeItem("JWT")
             router.push({name: "login"})
         },
-        async loadUserFromToken({commit, state, dispatch}: { commit: Commit, state: authState, dispatch: Dispatch }) {
+        async loadUserFromToken({
+                                    commit,
+                                    rootState,
+                                    dispatch
+                                }: { commit: Commit, rootState: RootState, dispatch: Dispatch }) {
             return new Promise((resolve) => {
                 fetch("http://localhost:3000/api/user", {
                     method: "GET",
                     credentials: 'same-origin',
                     headers: {
-                        'Authorization': 'JWT ' + state.user.token
+                        'Authorization': 'JWT ' + rootState.token
                     }
                 })
                     .then(response => response.json())
@@ -103,6 +82,7 @@ export default {
                         if (result.user) {
                             sessionStorage.setItem("JWT", result.user.token)
                             commit("setUser", result.user)
+                            commit("setToken", result.user.token)
                         }
                         resolve(result)
                     })
@@ -128,20 +108,21 @@ export default {
                     .then((result: { user: UserWithTokenType }) => {
                         if (result.user) {
                             sessionStorage.setItem("JWT", result.user.token)
+                            commit("setToken", result.user.token)
                             commit("setUser", result.user)
                         }
                         resolve(result)
                     })
             })
         },
-        async updateUser({commit, state}: { commit: Commit, state: authState }, user: UserType) {
+        async updateUser({commit, rootState}: { commit: Commit, rootState: RootState }, user: UserType) {
             return new Promise((resolve, reject) => {
                 fetch("http://localhost:3000/api/user", {
                     method: "PUT",
                     credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'JWT ' + state.user.token
+                        'Authorization': 'JWT ' + rootState.token
                     },
                     body: JSON.stringify({
                         username: user.username,
@@ -153,13 +134,13 @@ export default {
                     .then(async response => {
                         const data = await response.json()
                         if (response.status === 200) {
-                            commit("setUser",user)
+                            commit("setUser", user)
                             resolve("Update is successful.")
-                        }else{
+                        } else {
                             reject(data)
                         }
                     })
             })
         }
-    }
+    } as ActionTree<AuthState, RootState>
 }

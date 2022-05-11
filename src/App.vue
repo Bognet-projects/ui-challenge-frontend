@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <HeaderComponent />
-    <v-main>
+    <v-main class="background">
       <router-view/>
     </v-main>
   </v-app>
@@ -20,9 +20,3 @@ export default class App extends Vue{
 
 }
 </script>
-
-<style lang="scss">
-.v-main{
-  background-color: #ece8dd;
-}
-</style>

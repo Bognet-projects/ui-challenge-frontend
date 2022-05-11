@@ -1,5 +1,7 @@
 <template>
-  <v-card>
+  <v-card
+      class="my-2"
+  >
     <v-card-title>{{ article.title }}</v-card-title>
     <v-card-subtitle>Written by {{ article.author.username }} at {{ article.created | dateFormat }}</v-card-subtitle>
     <v-card-text>{{ article.description }}</v-card-text>
@@ -7,7 +9,8 @@
       <v-btn
           text
           class="ml-auto"
-          color="teal accent-4"
+          color="indigo darken-4"
+          :to="{name: 'article', params: {id: article.id}}"
       >
         Read More
       </v-btn>

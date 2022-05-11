@@ -8,21 +8,16 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
 import {ArticleType} from "@/types/article";
-import {mapState} from "vuex";
-import {storeState} from "@/store";
 import ArticleCard from "@/components/ArticleCard.vue";
+import {State} from "vuex-class";
 
 @Component({
-  components: {ArticleCard},
-  computed: mapState<storeState>({
-        articles(state: storeState): ArticleType[] {
-          return state.articles.articles
-        }
-      })
+      components: {ArticleCard}
     }
 )
 export default class HomePage extends Vue {
-  articles?: ArticleType[]
+  @State(state => state.articles.articles) articles: ArticleType[] | undefined
+
   message = ""
 
   created() {

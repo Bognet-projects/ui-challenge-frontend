@@ -11,7 +11,7 @@
           rounded
           text
           class="mr-3"
-          to="profile"
+          :to="{name: 'profile'}"
           v-if="this.$store.getters.isAuth"
       >{{ this.$store.getters.getUserName }}
       </v-btn>
@@ -30,6 +30,8 @@
         v-model="drawer"
         absolute
         temporary
+        color="teal"
+        dark
     >
       <v-list v-if="this.$store.getters.isAuth">
         <v-list-item>
@@ -51,7 +53,7 @@
           nav
           dense
       >
-        <v-list-item link v-for="item in this.menu" :key="item.name" :to="item.link">
+        <v-list-item link v-for="item in this.menu" :key="item.name" :to="{name: item.link}">
           <v-list-item-icon>
             <v-icon dense>{{item.icon}}</v-icon>
           </v-list-item-icon>
