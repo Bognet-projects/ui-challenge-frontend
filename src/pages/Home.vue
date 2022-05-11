@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row no-gutters>
+    <v-row no-gutters v-if="isAuth">
       <v-btn class="ml-auto" color="info" @click="$router.push({name: 'create'})">
         <v-icon left>
           fa-plus
@@ -17,7 +17,7 @@
 import {Component, Vue} from 'vue-property-decorator';
 import {ArticleType} from "@/types/article";
 import ArticleCard from "@/components/ArticleCard.vue";
-import {Action, State} from "vuex-class";
+import {Action, Getter, State} from "vuex-class";
 
 @Component({
       components: {ArticleCard}
@@ -25,6 +25,7 @@ import {Action, State} from "vuex-class";
 )
 export default class HomePage extends Vue {
   @State(state => state.articles.articles) articles: ArticleType[] | undefined
+  @Getter('isAuth') isAuth!: boolean
   @Action('loadArticles') loadArticles!: () => Promise<ArticleType[] | string>
 
   message = ""
