@@ -3,7 +3,7 @@ import Vuex, {StoreOptions} from 'vuex'
 import {auth} from "@/store/modules/auth";
 import {users} from "@/store/modules/users";
 import {articles} from "@/store/modules/articles";
-import {RootState} from "@/types/Vuex";
+import {RootState} from "@/types/Vuex/States";
 
 Vue.use(Vuex)
 

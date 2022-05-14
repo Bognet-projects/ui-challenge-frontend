@@ -1,6 +1,6 @@
 import {ArticleType, CreateArticleType} from "@/types/article";
 import {ActionTree, Commit, GetterTree, Module, MutationTree} from "vuex";
-import {ArticlesState, RootState} from "@/types/Vuex";
+import {ArticlesState, RootState} from "@/types/Vuex/States";
 import router from "@/router";
 
 export const articles: Module<ArticlesState, RootState> = {

@@ -1,9 +1,10 @@
 import {LoginUserType, RegisterUserType, UserType, UserWithTokenType} from "@/types/userType";
-import {ActionTree, Commit, Dispatch, GetterTree, Module, MutationTree} from "vuex";
+import {ActionTree, Commit, Dispatch, MutationTree} from "vuex";
 import router from "@/router";
-import {AuthState, RootState} from "@/types/Vuex";
+import {AuthState, RootState} from "@/types/Vuex/States";
+import {AuthGetters} from "@/types/Vuex/Getters";
 
-export const auth: Module<AuthState, RootState> = {
+export const auth = {
     state: {
         user: undefined
     } as AuthState,
@@ -17,7 +18,7 @@ export const auth: Module<AuthState, RootState> = {
         getUserId(state: AuthState): number | null {
             return state.user ? state.user.id : null
         }
-    } as GetterTree<AuthState, RootState>,
+    } as AuthGetters,
     mutations: {
         setUser(state: AuthState, user: UserWithTokenType) {
             state.user = user;

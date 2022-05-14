@@ -1,73 +1,63 @@
-import {UserType} from "@/types/userType";
-import {ActionTree, GetterTree, Module, MutationTree} from "vuex";
-import {RootState, UsersState} from "@/types/Vuex";
+import {UsersState} from "@/types/Vuex/States";
+import {UsersMutations} from "@/types/Vuex/Mutations";
+import {UsersGetters} from "@/types/Vuex/Getters";
+import {UserActions} from "@/types/Vuex/Actions";
 
-export const users: Module<UsersState, RootState> = {
+const apiUrl = process.env.VUE_APP_API_URL
+
+export const users = {
     state: {
         users: []
     } as UsersState,
     mutations: {
-        setUsers(state: UsersState, users: UserType[]) {
+        setUsers(state, users) {
             state.users = users
         },
-        removeUser(state: UsersState, email: string) {
+        removeUser(state, email) {
             state.users = state.users.filter((user) => {
                 return user.email !== email
             })
         }
-    } as MutationTree<UsersState>,
+    } as UsersMutations,
     getters: {
-        getAllUser(state: UsersState): UserType[] {
-            return state.users
-        },
-        getAllUsersExceptMe(state: UsersState, rootGetters): UserType[] {
+        getAllUsersExceptMe(state, rootGetters) {
             return state.users.filter((user) => {
                 return user.id !== rootGetters.getUserId
             })
         }
-    } as GetterTree<UsersState, RootState>,
+    } as UsersGetters,
     actions: {
-        async loadUsers({commit, rootGetters}): Promise<UserType[] | string> {
-            return new Promise((resolve, reject) => {
-                fetch("http://localhost:3000/api/users", {
-                    method: "GET",
-                    credentials: 'same-origin',
-                    headers: {
-                        'Authorization': 'JWT ' + rootGetters.getToken
-                    }
-                })
-                    .then(response => response.json())
-                    .then((result: UserType[] | string) => {
-                        if (result) {
-                            commit("setUsers", result)
-                        } else {
-                            reject(result)
-                        }
-                        resolve(result)
-                    })
+        async loadUsers({commit, rootGetters}) {
+            fetch(apiUrl + "users", {
+                method: "GET",
+                credentials: 'same-origin',
+                headers: {
+                    'Authorization': 'JWT ' + rootGetters.getToken
+                }
             })
+                .then(response => response.json())
+                .then(result => {
+                    if (!result.message)
+                        commit("setUsers", result)
+                })
         },
-        async deleteUser({commit, rootGetters}, email: string): Promise<string> {
-            return new Promise<string>((resolve, reject) => {
-                fetch("http://localhost:3000/api/users/" + email, {
-                    method: "DELETE",
-                    credentials: 'same-origin',
-                    headers: {
-                        'Authorization': 'JWT ' + rootGetters['getToken']
+        async deleteUser({commit, rootGetters}, email) {
+            return fetch(apiUrl + "users/" + email, {
+                method: "DELETE",
+                credentials: 'same-origin',
+                headers: {
+                    'Authorization': 'JWT ' + rootGetters.getToken
+                }
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (!result.message) {
+                        commit("removeUser", email)
+                        return "The user has been successfully deleted."
+                    } else {
+                        return result.message
                     }
                 })
-                    .then(response => {
-                            if (response.status === 200) {
-                                resolve("The user has been successfully deleted.")
-                                commit("removeUser", email)
-                            } else if (response.status === 400) {
-                                reject("The user can't delete itself.")
-                            } else {
-                                reject("Unauthorized!")
-                            }
-                        }
-                    )
-            })
         }
-    } as ActionTree<UsersState, RootState>
+    } as UserActions
 }
