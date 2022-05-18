@@ -1,27 +1,30 @@
 import {ArticleType, CreateArticleType} from "@/types/article";
-import {ActionTree, Commit, GetterTree, Module, MutationTree} from "vuex";
-import {ArticlesState, RootState} from "@/types/Vuex/States";
-import router from "@/router";
+import {ArticlesState} from "@/types/Vuex/States";
+import {ArticlesMutations} from "@/types/Vuex/Mutations";
+import {ArticlesGetters} from "@/types/Vuex/Getters";
+import {ArticlesActions} from "@/types/Vuex/Actions";
 
-export const articles: Module<ArticlesState, RootState> = {
+const apiUrl = process.env.VUE_APP_API_URL
+
+export const articles = {
     state: {
         articles: [],
         count: 0
     } as ArticlesState,
     mutations: {
-        addArticle(state: ArticlesState, article: ArticleType) {
+        addArticle(state, article) {
             if (!state.articles.some((data) => {
                 return data.id === article.id
             }))
                 state.count = state.articles.push(article)
         },
-        removeArticle(state: ArticlesState, slug: string) {
+        removeArticle(state, slug) {
             state.articles = state.articles.filter((article: ArticleType): boolean => {
                 return article.slug !== slug
             })
             state.count = state.articles.length
         },
-        addArticles(state: ArticlesState, articles: ArticleType[]) {
+        addArticles(state, articles) {
             articles.forEach((article) => {
                 if (!state.articles.some((data) => {
                     return data.id === article.id
@@ -29,7 +32,7 @@ export const articles: Module<ArticlesState, RootState> = {
                     state.count = state.articles.push(article)
             })
         },
-        updateArticle(state: ArticlesState, article: ArticleType) {
+        updateArticle(state, article) {
             state.articles.find((data) => {
                 if (data.id === article.id) {
                     data = article
@@ -37,65 +40,54 @@ export const articles: Module<ArticlesState, RootState> = {
                 return false
             })
         }
-    } as MutationTree<ArticlesState>,
+    } as ArticlesMutations,
     getters: {
         getMyArticles: (state: ArticlesState) => (id: number) => {
             return state.articles.filter((article) => {
                 return article.author.id === id
             })
         },
-        articlesCount(state: ArticlesState): number {
-            return state.count
-        },
         getArticleById: (state: ArticlesState) => (id: number): ArticleType | undefined => {
             return state.articles.find((article) => {
                 return article.id === id
             })
         }
-    } as GetterTree<ArticlesState, RootState>,
+    } as ArticlesGetters,
     actions: {
-        async loadArticles({commit}: { commit: Commit }) {
-            return new Promise((resolve, reject) => {
-                fetch("http://localhost:3000/api/articles", {
-                    method: "GET",
-                    credentials: 'same-origin'
-                })
-                    .then((response) => {
-                        if (response.status === 200) {
-                            return response.json()
-                        } else {
-                            reject()
-                        }
-                    })
-                    .then((result: { articles: ArticleType[], articlesCount: number }) => {
-                        if (result.articlesCount > 0) {
-                            commit("addArticles", result.articles)
-                            resolve(result.articles)
-                        } else if (result.articlesCount === 0) {
-                            resolve("No article found!")
-                        }
-                    })
+        async loadArticles({commit}) {
+            return fetch(apiUrl + "articles", {
+                method: "GET",
+                credentials: 'same-origin'
             })
+                .then(response => response.json())
+                .then((result: { articles: ArticleType[], articlesCount: number }) => {
+                    if (result) {
+                        commit("addArticles", result.articles)
+                    } else {
+                        return
+                    }
+                })
         },
         async deleteArticle({commit, rootGetters}, slug: string): Promise<string> {
-            return fetch(`http://localhost:3000/api/articles/${slug}`, {
+            return fetch(apiUrl + "articles/" + slug, {
                 method: 'DELETE',
                 credentials: 'same-origin',
                 headers: {
                     'Authorization': 'JWT ' + rootGetters.getToken
                 }
             })
-                .then(async response => {
-                    const data = await response.json()
-                    if (response.status === 200) {
+                .then(response => response.json())
+                .then(result => {
+                    if (!result.message) {
                         commit("removeArticle", slug)
-                        await router.push({name: "home"})
+                        return "The article has been successfully deleted."
+                    } else {
+                        return result.message
                     }
-                    return data.message
                 })
         },
         async updateArticle({commit, rootGetters}, article: ArticleType): Promise<string> {
-            return fetch(`http://localhost:3000/api/articles/${article.slug}`, {
+            return fetch(`${apiUrl}articles/${article.slug}`, {
                 method: 'PUT',
                 credentials: 'same-origin',
                 headers: {
@@ -109,16 +101,18 @@ export const articles: Module<ArticlesState, RootState> = {
                     tagList: article.tagList
                 })
             })
-                .then(async response => {
-                    const data = await response.json()
-                    if (response.status === 200) {
-                        commit("updateArticle", article)
+                .then(response => response.json())
+                .then(result =>{
+                    if (!result.message){
+                        commit("updateArticle",article)
+                        return "The article has been successfully updated."
+                    } else {
+                        return result.message
                     }
-                    return data.message
                 })
         },
         async createArticle({commit, rootGetters}, article: CreateArticleType): Promise<string> {
-            return fetch("http://localhost:3000/api/articles/", {
+            return fetch(apiUrl + "articles/", {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
@@ -132,13 +126,15 @@ export const articles: Module<ArticlesState, RootState> = {
                     tagList: article.tagList
                 })
             })
-                .then(async response => {
-                    const data = await response.json()
-                    if (response.status === 200) {
+                .then(response => response.json())
+                .then(result => {
+                    if (!result.message){
                         commit("addArticle", article)
+                        return "The article has been successfully created."
+                    } else {
+                        return result.message
                     }
-                    return data.message
                 })
         }
-    } as ActionTree<ArticlesState, RootState>
+    } as ArticlesActions
 }

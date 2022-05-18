@@ -4,13 +4,14 @@ import {auth} from "@/store/modules/auth";
 import {users} from "@/store/modules/users";
 import {articles} from "@/store/modules/articles";
 import {RootState} from "@/types/Vuex/States";
+import router from "@/router";
 
 Vue.use(Vuex)
 
 const store: StoreOptions<RootState> = {
     state: {
         token: undefined
-    },
+    } as RootState,
     mutations: {
         setToken(state: RootState, token: string) {
             state.token = token
@@ -28,7 +29,16 @@ const store: StoreOptions<RootState> = {
         auth,
         users,
         articles
-    }
+    },
+    plugins: [
+        (store) => {
+            store.subscribe((mutation) => {
+                if (mutation.type === "removeArticle") {
+                    router.push({name: 'home'})
+                }
+            })
+        }
+    ]
 }
 
 export default new Vuex.Store<RootState>(store)

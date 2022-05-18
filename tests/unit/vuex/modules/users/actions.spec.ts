@@ -79,7 +79,7 @@ describe('actions', () => {
             payload: 'test0@email.com'
         }], done)
 
-        expect(getTokenMock).toBeCalledTimes(1)
+            expect(getTokenMock).toBeCalledTimes(1)
         response.then(text => {
             expect(text).toBe("The user has been successfully deleted.")
         })
