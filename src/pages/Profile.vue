@@ -101,7 +101,7 @@ export default class ProfilePage extends Vue {
     }
   }
 
-  mounted() {
+  created() {
     this.loadArticles()
   }
 

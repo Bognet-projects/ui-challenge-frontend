@@ -1,5 +1,5 @@
-import {UserType} from "@/types/userType";
-import {ArticlesState, UsersState} from "@/types/Vuex/States";
+import {UserType, UserWithTokenType} from "@/types/userType";
+import {ArticlesState, AuthState, UsersState} from "@/types/Vuex/States";
 import {MutationTree} from "vuex";
 import {ArticleType} from "@/types/article";
 
@@ -17,4 +17,8 @@ export interface ArticlesMutations<S = ArticlesState> extends MutationTree<S> {
     addArticles(state: S, articles: ArticleType[]): void,
 
     updateArticle(state: S, article: ArticleType): void
+}
+
+export interface AuthMutations<S = AuthState> extends MutationTree<S> {
+    setUser(state: S, user: UserWithTokenType): void
 }

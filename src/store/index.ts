@@ -36,6 +36,9 @@ const store: StoreOptions<RootState> = {
                 if (mutation.type === "removeArticle") {
                     router.push({name: 'home'})
                 }
+                if (mutation.type === "setToken" && mutation.payload === undefined) {
+                    router.push({name: 'login'})
+                }
             })
         }
     ]

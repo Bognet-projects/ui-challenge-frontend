@@ -44,7 +44,8 @@ export const articles = {
     getters: {
         getMyArticles: (state: ArticlesState) => (id: number) => {
             return state.articles.filter((article) => {
-                return article.author.id === id
+                if (article.author)
+                    return article.author.id === id
             })
         },
         getArticleById: (state: ArticlesState) => (id: number): ArticleType | undefined => {
@@ -102,9 +103,9 @@ export const articles = {
                 })
             })
                 .then(response => response.json())
-                .then(result =>{
-                    if (!result.message){
-                        commit("updateArticle",article)
+                .then(result => {
+                    if (!result.message) {
+                        commit("updateArticle", article)
                         return "The article has been successfully updated."
                     } else {
                         return result.message
@@ -128,7 +129,7 @@ export const articles = {
             })
                 .then(response => response.json())
                 .then(result => {
-                    if (!result.message){
+                    if (!result.message) {
                         commit("addArticle", article)
                         return "The article has been successfully created."
                     } else {
