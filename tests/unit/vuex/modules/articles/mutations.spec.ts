@@ -36,6 +36,13 @@ describe('articles mutations', () => {
         expect(state.count).toBe(1)
         expect(state.articles).toMatchObject([dummyArticles[1]])
 
+        //Removing last article
+        removeArticle(state, dummyArticles[1].slug)
+
+        expect(state.articles).toHaveLength(0)
+        expect(state.count).toBe(0)
+        expect(state.articles).toMatchObject([])
+
         //Removing from an empty state
         state = {articles: [], count: 0}
         removeArticle(state, slug)

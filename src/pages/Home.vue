@@ -8,7 +8,7 @@
         New
       </v-btn>
     </v-row>
-    <p v-if="articles.length === 0">{{ message }}</p>
+    <v-alert type="error" dense class="my-3" v-if="articles.length === 0">{{ message }}</v-alert>
     <ArticleCard v-for="article in articles" :key="article.id" :article="article"></ArticleCard>
   </v-container>
 </template>
@@ -26,17 +26,17 @@ import {Action, Getter, State} from "vuex-class";
 export default class HomePage extends Vue {
   @State(state => state.articles.articles) articles: ArticleType[] | undefined
   @Getter('isAuth') isAuth!: boolean
-  @Action('loadArticles') loadArticles!: () => Promise<ArticleType[] | string>
+  @Action('loadArticles') loadArticles!: () => Promise<string>
 
-  message = ""
+  get message() {
+    if (this.articles?.length === 0)
+      return "No articles found!"
+    else
+      return ''
+  }
 
   mounted() {
     this.loadArticles()
-        .then((result: string | ArticleType[]) => {
-          if (typeof result === "string") {
-            this.message = result
-          }
-        })
   }
 
 }

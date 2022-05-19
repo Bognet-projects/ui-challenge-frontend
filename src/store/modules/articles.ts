@@ -62,10 +62,8 @@ export const articles = {
             })
                 .then(response => response.json())
                 .then((result: { articles: ArticleType[], articlesCount: number }) => {
-                    if (result) {
+                    if (result.articlesCount > 0) {
                         commit("addArticles", result.articles)
-                    } else {
-                        return
                     }
                 })
         },

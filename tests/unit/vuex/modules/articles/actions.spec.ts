@@ -23,7 +23,10 @@ describe('Articles Actions', () => {
         global.fetch = jest.fn().mockImplementationOnce(() => {
             return Promise.resolve({
                 status: 200,
-                json: () => dummyArticles
+                json: () => ({
+                    articles: dummyArticles,
+                    articlesCount: dummyArticles.length
+                })
             })
         })
 
